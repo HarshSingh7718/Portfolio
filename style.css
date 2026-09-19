@@ -102,18 +102,48 @@
         }
 
         /* Header Navigation */
-        header {
+        #home header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem 0;
+            padding: 1.5rem 4%; 
             z-index: 1000;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 100%;
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: 1px solid transparent;
+            border-radius: 0;
+            transition: all 0.3s ease;
         }
 
-        header h1.logo {
+        #home header.scrolled {
+            top: 20px;
+            width: 90%;
+            max-width: 1200px;
+            padding: 0.8rem 2rem; /* Slightly increased padding for a bit more height */
+            background: rgba(10, 15, 30, 0.7); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+        }
+
+        #home header h1.logo {
             font-size: clamp(1.5rem, 4vw, 2.5rem);
             font-weight: 300;
             letter-spacing: 2px;
+            margin: 0;
+            transition: all 0.3s ease;
+        }
+
+        #home header.scrolled h1.logo {
+            font-size: 1.5rem; /* Shrinks the logo to reduce navbar height */
         }
 
         nav {
@@ -152,6 +182,11 @@
             cursor: pointer;
         }
 
+        #home header.scrolled .btn-signing {
+            padding: 0.5rem 1.5rem; /* Shrinks the button slightly */
+            font-size: 0.85rem;
+        }
+
         .btn-signing:hover {
             background-color: white;
             transform: translateY(-2px);
@@ -164,6 +199,7 @@
             grid-template-columns: 1fr;
             align-items: center;
             position: relative;
+            padding-top: 8rem; /* Pushes the entire hero grid down below navbar */
             padding-bottom: 4rem;
             
         }
@@ -178,7 +214,7 @@
         .content {
             z-index: 10;
             max-width: 600px;
-            padding-top: 2rem;
+            padding-top: 0; /* Reset to 0 so it aligns perfectly with the profile image in the grid */
         }
 
         .tag-box {

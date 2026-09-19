@@ -29,6 +29,18 @@
     closeBtn.addEventListener('click', toggleMenu);
     menuMask.addEventListener('click', toggleMenu);
 
+    // Navbar Scroll Effect
+    const navbar = document.querySelector('#home header');
+    if (navbar) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    }
+
     // Accordion Logic
     const rowTriggers = document.querySelectorAll('.menu-row-trigger');
     rowTriggers.forEach(trigger => {
