@@ -12,8 +12,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <!-- <link rel="stylesheet" href="style1.css" /> -->
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
     <!-- Top Drop Down Menu -->
@@ -63,7 +62,7 @@
         <!-- Use cases -->
         <div class="menu-row">
           <button class="menu-row-trigger">
-            Features
+            About
             <svg class="chevron-icon" viewBox="0 0 24 24">
               <path d="M6 9l6 6 6-6" />
             </svg>
@@ -134,7 +133,7 @@
     <div id="home" class="container">
       <img
         class="image-gradient"
-        src="gradient.png"
+        src="assets/images/gradient.png"
         alt=""
         onerror="this.style.display='none'"
       />
@@ -146,8 +145,8 @@
         </h1>
         <nav>
           <a data-aos="fade-down" data-aos-delay="100" href="#home">HOME</a>
-          <a data-aos="fade-down" data-aos-delay="200" href="#feature"
-            >FEATURES</a
+          <a data-aos="fade-down" data-aos-delay="200" href="#about"
+            >ABOUT</a
           >
           <a data-aos="fade-down" data-aos-delay="300" href="#skills">SKILLS</a>
           <a data-aos="fade-down" data-aos-delay="400" href="#projects"
@@ -204,14 +203,14 @@
           data-aos-delay="900"
           data-aos-duration="1500"
         >
-          <img src="1image.jpeg" alt="Description of image" />
+          <img src="assets/images/1image.jpeg" alt="Description of image" />
         </div>
       </main>
     </div>
 
     <!-- second page -->
     <!-- Slider Container -->
-    <div id="feature" class="slider">
+    <div id="about" class="slider">
       <!-- Slider Track: Contains original and cloned cards -->
       <div class="slider-track">
         <!-- Original Cards -->
@@ -1401,8 +1400,62 @@
 
     <!-- Scripts -->
     <!-- <script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.51/build/spline-viewer.js"></script> -->
+    <!-- ===== Chatbot Widget ===== -->
+    <div id="chatbot-container">
+      <!-- Toggle Button -->
+      <button id="chatbot-toggle" aria-label="Open Chat">
+        <!-- Glowing orb open state -->
+        <div id="chatbot-open-icon" class="ai-orb">
+          <canvas id="ai-orb-canvas" class="ai-orb__canvas" width="64" height="64"></canvas>
+          <div class="ai-orb__glow"></div>
+        </div>
+        <!-- Close X icon -->
+        <svg id="chatbot-close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      
+      <!-- Hover Tooltip -->
+      <div id="chatbot-tooltip"></div>
+
+      <!-- Chat Window -->
+      <div id="chatbot-window" class="chatbot-hidden">
+        <div id="chatbot-header">
+          <div class="chatbot-header-info">
+            <div class="chatbot-avatar">
+              <canvas id="ai-orb-canvas-header" class="ai-orb__canvas" width="28" height="28"></canvas>
+            </div>
+            <div>
+              <p class="chatbot-name">Harsh's Assistant</p>
+              <p class="chatbot-status"><span class="chatbot-dot"></span> Online</p>
+            </div>
+          </div>
+        </div>
+        <div id="chatbot-messages">
+          <div class="chat-msg bot">
+            <p> Hi there! I'm Harsh's virtual assistant. Ask me anything about his skills, projects, achievements or tap a chip below.</p>
+          </div>
+        </div>
+        <div id="chatbot-suggestions">
+          <button class="suggestion-chip" data-query="What are your skills?">Skills</button>
+          <button class="suggestion-chip" data-query="Tell me about your projects">Projects</button>
+          <button class="suggestion-chip" data-query="Tell me about your achievements">Achievements</button>
+          <button class="suggestion-chip" data-query="How can I contact you?">Contact</button>
+        </div>
+        <div id="chatbot-input-area">
+          <input type="text" id="chatbot-input" placeholder="Ask me anything..." autocomplete="off" />
+          <button id="chatbot-send">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- ===== End Chatbot Widget ===== -->
+
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-    <!-- <script src="webs1.js"></script> -->
-    <script src="wesite.js"></script>
+    <script src="js/wesite.js"></script>
   </body>
 </html>

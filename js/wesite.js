@@ -336,4 +336,203 @@
         });
     });
     });
+
+// ===== AI Orb Canvas Animation =====
+(function () {
+    const canvases = document.querySelectorAll('.ai-orb__canvas');
+    if (canvases.length === 0) return;
     
+    const ctxs = Array.from(canvases).map(c => ({
+        ctx: c.getContext('2d'),
+        W: c.width,
+        H: c.height
+    }));
+    
+    let t = 0;
+
+    function drawOrb() {
+        ctxs.forEach(({ctx, W, H}) => {
+            ctx.clearRect(0, 0, W, H);
+
+            // Base sphere gradient (white highlight top-left like the reference image)
+            const baseGrad = ctx.createRadialGradient(W * 0.38, H * 0.3, 2, W / 2, H / 2, W / 2);
+            baseGrad.addColorStop(0,   'rgba(255, 255, 255, 0.95)');
+            baseGrad.addColorStop(0.2, 'rgba(200, 170, 255, 0.9)');
+            baseGrad.addColorStop(0.5, 'rgba(130, 60, 255, 0.85)');
+            baseGrad.addColorStop(0.8, 'rgba(60, 10, 160, 0.9)');
+            baseGrad.addColorStop(1,   'rgba(20, 0, 80, 1)');
+
+            ctx.beginPath();
+            ctx.arc(W / 2, H / 2, W / 2 - 1, 0, Math.PI * 2);
+            ctx.fillStyle = baseGrad;
+            ctx.fill();
+
+            // Animated colour sweep on top of the sphere
+            const hue1 = (260 + Math.sin(t * 0.7) * 30) | 0;
+            const hue2 = (200 + Math.cos(t * 0.5) * 40) | 0;
+            const sweepGrad = ctx.createLinearGradient(
+                W / 2 + Math.cos(t) * W * 0.3,
+                H / 2 + Math.sin(t) * H * 0.3,
+                W / 2 - Math.cos(t) * W * 0.3,
+                H / 2 - Math.sin(t) * H * 0.3
+            );
+            sweepGrad.addColorStop(0,   `hsla(${hue1}, 100%, 70%, 0.35)`);
+            sweepGrad.addColorStop(0.5, `hsla(${hue2}, 90%, 55%, 0.2)`);
+            sweepGrad.addColorStop(1,   `hsla(${hue1 + 60}, 80%, 40%, 0.3)`);
+
+            ctx.beginPath();
+            ctx.arc(W / 2, H / 2, W / 2 - 1, 0, Math.PI * 2);
+            ctx.fillStyle = sweepGrad;
+            ctx.fill();
+
+            // Specular highlight (white glint top-left)
+            const specGrad = ctx.createRadialGradient(W * 0.34, H * 0.28, 0, W * 0.38, H * 0.35, W * 0.26);
+            specGrad.addColorStop(0,   'rgba(255,255,255,0.75)');
+            specGrad.addColorStop(0.5, 'rgba(255,255,255,0.15)');
+            specGrad.addColorStop(1,   'rgba(255,255,255,0)');
+            ctx.beginPath();
+            ctx.arc(W / 2, H / 2, W / 2 - 1, 0, Math.PI * 2);
+            ctx.fillStyle = specGrad;
+            ctx.fill();
+        });
+
+        t += 0.025;
+        requestAnimationFrame(drawOrb);
+    }
+    drawOrb();
+})();
+// ===== End AI Orb Canvas Animation =====
+
+// ===== Chatbot Widget Logic =====
+(function () {
+    const toggle     = document.getElementById('chatbot-toggle');
+    const window_    = document.getElementById('chatbot-window');
+    const openIcon   = document.getElementById('chatbot-open-icon');
+    const closeIcon  = document.getElementById('chatbot-close-icon');
+    const messages   = document.getElementById('chatbot-messages');
+    const input      = document.getElementById('chatbot-input');
+    const sendBtn    = document.getElementById('chatbot-send');
+    const chips      = document.querySelectorAll('.suggestion-chip');
+    const tooltip    = document.getElementById('chatbot-tooltip');
+
+    let isOpen = false;
+    let tooltipTypingTimer;
+    const tooltipFullText = "I'M EMOTION AI ASSISTANT. CLICK TO<br>INTERACT WITH ME.";
+    const tooltipWords = tooltipFullText.split(' ');
+
+    toggle.addEventListener('mouseenter', () => {
+        if (isOpen) return; // Hide tooltip if chat is open
+        clearTimeout(tooltipTypingTimer);
+        tooltip.innerHTML = '';
+        let currentWordIndex = 0;
+        
+        function typeWord() {
+            if (currentWordIndex < tooltipWords.length) {
+                tooltip.innerHTML += (currentWordIndex > 0 ? ' ' : '') + tooltipWords[currentWordIndex];
+                currentWordIndex++;
+                tooltipTypingTimer = setTimeout(typeWord, 120); // 120ms per word
+            }
+        }
+        
+        typeWord();
+    });
+
+    toggle.addEventListener('mouseleave', () => {
+        clearTimeout(tooltipTypingTimer);
+    });
+
+    // Knowledge base about Harsh
+    const KB = [
+        {
+            keys: ['skill', 'tech', 'stack', 'language', 'know', 'expertise', 'technology'],
+            reply: 'Harsh is skilled in:\n\n• <b>Frontend:</b> React.js, Next.js, HTML/CSS, Tailwind\n• <b>Backend:</b> Node.js, Express.js, Python\n• <b>Database:</b> MongoDB, MySQL\n• <b>AI/ML:</b> CrewAI, LangChain, Groq, OpenAI\n• <b>Tools:</b> Git, Docker, Vercel, Cloudinary'
+        },
+        {
+            keys: ['project', 'work', 'build', 'portfolio', 'mockmate', 'made'],
+            reply: 'Harsh has built some great projects:\n\n• <b>MockMate</b> – AI-driven mock data generator for NoSQL\n• <b>Podcast AI Pipeline</b> – Multi-agent AI podcast creator\n• <b>Portfolio Website</b> – The very site you\'re on!\n\nCheck the Projects section for live demos!'
+        },
+        {
+            keys: ['contact', 'email', 'hire', 'reach', 'touch', 'message', 'talk'],
+            reply: 'You can contact Harsh through the <b>Contact Form</b> on this page. Just scroll down to the "Talk to Sales" section and fill in your details — he typically responds within 24 hours!'
+        },
+        {
+            keys: ['resume', 'cv', 'download', 'experience'],
+            reply: 'You can view and download Harsh\'s resume here:\n\n<a href="https://drive.google.com/file/d/1rNNbxBWxi5PAiLo3LDK1PugITMDsMHNd/view?usp=sharing" target="_blank" style="color:#c4a8ff">Open Resume</a>'
+        },
+        {
+            keys: ['journey', 'education', 'study', 'college', 'background', 'story'],
+            reply: 'Head to the <b>Journey</b> section on this page to see Harsh\'s educational background and career timeline!'
+        },
+        {
+            keys: ['certification', 'certificate', 'course', 'achievement'],
+            reply: 'Check out the <b>Certification</b> section of this portfolio to see all the courses and certifications Harsh has completed!'
+        },
+        {
+            keys: ['who', 'harsh', 'about', 'introduce', 'tell me'],
+            reply: 'Harsh Kumar is a passionate Full-Stack & AI developer who builds modern, scalable, and AI-powered web applications with exceptional user experiences.\n\nHe specializes in combining cutting-edge AI tools with clean, performant web apps.'
+        },
+        {
+            keys: ['hi', 'hello', 'hey', 'greet', 'sup', 'hiya'],
+            reply: 'Hi there! Great to see you exploring Harsh\'s portfolio. What would you like to know? You can ask about his skills, projects, or how to get in touch!'
+        },
+    ];
+
+    function getBotReply(text) {
+        const lower = text.toLowerCase();
+        for (const item of KB) {
+            if (item.keys.some(k => lower.includes(k))) return item.reply;
+        }
+        return "I'm not sure about that, but feel free to reach out via the contact form and Harsh will get back to you personally!";
+    }
+
+    function addMsg(html, role) {
+        const div = document.createElement('div');
+        div.className = `chat-msg ${role}`;
+        const p = document.createElement('p');
+        p.innerHTML = html;
+        div.appendChild(p);
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+        return div;
+    }
+
+    function showTyping() {
+        const div = document.createElement('div');
+        div.className = 'chat-msg bot typing-indicator';
+        div.innerHTML = '<p><span></span><span></span><span></span></p>';
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+        return div;
+    }
+
+    function handleSend(query) {
+        const text = (query || input.value).trim();
+        if (!text) return;
+        input.value = '';
+
+        addMsg(text, 'user');
+
+        const typing = showTyping();
+        setTimeout(() => {
+            typing.remove();
+            addMsg(getBotReply(text), 'bot');
+        }, 900 + Math.random() * 400);
+    }
+
+    toggle.addEventListener('click', () => {
+        isOpen = !isOpen;
+        window_.classList.toggle('chatbot-hidden', !isOpen);
+        toggle.classList.toggle('chat-open', isOpen);
+        openIcon.style.display  = isOpen ? 'none' : 'block';
+        closeIcon.style.display = isOpen ? 'block' : 'none';
+        if (isOpen) setTimeout(() => input.focus(), 300);
+    });
+
+    sendBtn.addEventListener('click', () => handleSend());
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') handleSend(); });
+
+    chips.forEach(chip => {
+        chip.addEventListener('click', () => handleSend(chip.dataset.query));
+    });
+})();
+// ===== End Chatbot Widget Logic =====
