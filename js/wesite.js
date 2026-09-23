@@ -1,314 +1,314 @@
-  // first page
- // Cursor glow logic
-    const cursorLight = document.getElementById('cursor-light');
-    const hoverButton = document.getElementById('hover-btn');
+// first page
+// Cursor glow logic
+const cursorLight = document.getElementById('cursor-light');
+const hoverButton = document.getElementById('hover-btn');
 
-    document.addEventListener('mousemove', (e) => {
-        cursorLight.style.left = e.clientX + 'px';
-        cursorLight.style.top = e.clientY + 'px';
+document.addEventListener('mousemove', (e) => {
+    cursorLight.style.left = e.clientX + 'px';
+    cursorLight.style.top = e.clientY + 'px';
+});
+
+hoverButton.addEventListener('mouseenter', () => cursorLight.style.opacity = '1');
+hoverButton.addEventListener('mouseleave', () => cursorLight.style.opacity = '0');
+
+
+// Menu Logic
+const menuTrigger = document.getElementById('menu-trigger');
+const topMenu = document.getElementById('top-menu');
+const closeBtn = document.getElementById('close-btn');
+const menuMask = document.getElementById('menu-mask');
+
+const toggleMenu = () => {
+    topMenu.classList.toggle('active');
+    menuMask.classList.toggle('active');
+    // Prevent body scroll when menu is open
+    document.body.style.overflow = topMenu.classList.contains('active') ? 'hidden' : 'auto';
+};
+
+menuTrigger.addEventListener('click', toggleMenu);
+closeBtn.addEventListener('click', toggleMenu);
+menuMask.addEventListener('click', toggleMenu);
+
+// Navbar Scroll Effect
+const navbar = document.querySelector('#home header');
+if (navbar) {
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+}
+
+// Accordion Logic
+const rowTriggers = document.querySelectorAll('.menu-row-trigger');
+rowTriggers.forEach(trigger => {
+    trigger.addEventListener('click', () => {
+        const row = trigger.parentElement;
+        const content = row.querySelector('.menu-row-content');
+
+        if (content) {
+            const isActive = row.classList.contains('active');
+
+            // Close all other rows
+            document.querySelectorAll('.menu-row').forEach(r => r.classList.remove('active'));
+
+            // Open this row if it wasn't active
+            if (!isActive) {
+                row.classList.add('active');
+            }
+        }
+    });
+});
+// Initialize AOS with a slight offset for mobile
+document.addEventListener('DOMContentLoaded', () => {
+    AOS.init({
+        duration: 800,
+        once: true,
+        offset: 50
     });
 
-    hoverButton.addEventListener('mouseenter', () => cursorLight.style.opacity = '1');
-    hoverButton.addEventListener('mouseleave', () => cursorLight.style.opacity = '0');
+    // second page
 
+    // --- Slider Logic ---
+    const slider = document.querySelector('.slider');
+    const track = document.querySelector('.slider-track');
 
-    // Menu Logic
-    const menuTrigger = document.getElementById('menu-trigger');
-    const topMenu = document.getElementById('top-menu');
-    const closeBtn = document.getElementById('close-btn');
-    const menuMask = document.getElementById('menu-mask');
-
-    const toggleMenu = () => {
-        topMenu.classList.toggle('active');
-        menuMask.classList.toggle('active');
-        // Prevent body scroll when menu is open
-        document.body.style.overflow = topMenu.classList.contains('active') ? 'hidden' : 'auto';
-    };
-
-    menuTrigger.addEventListener('click', toggleMenu);
-    closeBtn.addEventListener('click', toggleMenu);
-    menuMask.addEventListener('click', toggleMenu);
-
-    // Navbar Scroll Effect
-    const navbar = document.querySelector('#home header');
-    if (navbar) {
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-    }
-
-    // Accordion Logic
-    const rowTriggers = document.querySelectorAll('.menu-row-trigger');
-    rowTriggers.forEach(trigger => {
-        trigger.addEventListener('click', () => {
-            const row = trigger.parentElement;
-            const content = row.querySelector('.menu-row-content');
-            
-            if (content) {
-                const isActive = row.classList.contains('active');
-                
-                // Close all other rows
-                document.querySelectorAll('.menu-row').forEach(r => r.classList.remove('active'));
-
-                // Open this row if it wasn't active
-                if (!isActive) {
-                    row.classList.add('active');
-                }
-            }
-        });
+    // Clone cards for the infinite loop effect
+    const trackContent = Array.from(track.children);
+    trackContent.forEach(item => {
+        const clone = item.cloneNode(true);
+        track.appendChild(clone);
     });
-    // Initialize AOS with a slight offset for mobile
-    document.addEventListener('DOMContentLoaded', () => {
-        AOS.init({
-            duration: 800,
-            once: true,
-            offset: 50
-        });
 
-        // second page
-
-        // --- Slider Logic ---
-        const slider = document.querySelector('.slider');
-        const track = document.querySelector('.slider-track');
-        
-        // Clone cards for the infinite loop effect
-        const trackContent = Array.from(track.children);
-        trackContent.forEach(item => {
-            const clone = item.cloneNode(true);
-            track.appendChild(clone);
-        });
-
-        // Apply Mouse Glow Effect AFTER cloning
-        const allCards = document.querySelectorAll('.card-container');
-        allCards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
-                card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
-            });
-            // The glow will now fade out at its last position.
-        });
-
-        let posX = 0;
-        let isDown = false;
-        let startX;
-        let scrollLeft;
-        let animationFrameId;
-
-        // Autoplay function
-        const play = () => {
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-            
-            function loop() {
-                posX -= 2; // Adjust speed here
-                if (posX <= -track.scrollWidth / 2) {
-                    posX += track.scrollWidth / 2;
-                }
-                track.style.transform = `translateX(${posX}px)`;
-                animationFrameId = requestAnimationFrame(loop);
-            }
-            loop();
-        };
-
-        // Pause autoplay function
-        const pause = () => {
-            cancelAnimationFrame(animationFrameId);
-            animationFrameId = null;
-        };
-
-        // Event listeners for dragging
-        const startDrag = (e) => {
-            isDown = true;
-            slider.classList.add('active');
-            startX = (e.touches ? e.touches[0].pageX : e.pageX) - slider.offsetLeft;
-            scrollLeft = posX;
-            pause();
-        };
-
-        const endDrag = () => {
-            if (!isDown) return;
-            isDown = false;
-            slider.classList.remove('active');
-        };
-
-        const onDrag = (e) => {
-            if (!isDown) return;
-            e.preventDefault();
-            const x = (e.touches ? e.touches[0].pageX : e.pageX) - slider.offsetLeft;
-            const walk = (x - startX) * 2;
-            posX = scrollLeft + walk;
-
-            const halfwayPoint = track.scrollWidth / 2;
-            if (posX < -halfwayPoint) {
-                posX += halfwayPoint;
-                scrollLeft += halfwayPoint; 
-            }
-            if (posX > 0) {
-                posX -= halfwayPoint;
-                scrollLeft -= halfwayPoint;
-            }
-            track.style.transform = `translateX(${posX}px)`;
-        };
-
-        // --- Event Listeners ---
-        slider.addEventListener('mouseenter', pause);
-        slider.addEventListener('mouseleave', () => {
-            if (!isDown) {
-                play();
-            }
-        });
-
-        slider.addEventListener('mousedown', startDrag);
-        window.addEventListener('mouseup', endDrag);
-        slider.addEventListener('mousemove', onDrag);
-
-        slider.addEventListener('touchstart', startDrag, { passive: true });
-        window.addEventListener('touchend', endDrag);
-        slider.addEventListener('touchmove', onDrag);
-        
-        // Start the autoplay
-        play();
-
-        // third page
-
-         const card = document.getElementById('card');
-
-        // Listen for mouse movement over the card
+    // Apply Mouse Glow Effect AFTER cloning
+    const allCards = document.querySelectorAll('.card-container');
+    allCards.forEach(card => {
         card.addEventListener('mousemove', (e) => {
-            // Get the position of the card relative to the viewport
             const rect = card.getBoundingClientRect();
-            
-            // Calculate the mouse position relative to the card's top-left corner
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+            card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+        });
+        // The glow will now fade out at its last position.
+    });
 
-            // Set the CSS custom properties on the card element.
-            card.style.setProperty('--mouse-x', `${x}px`);
-            card.style.setProperty('--mouse-y', `${y}px`);
+    let posX = 0;
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    let animationFrameId;
+
+    // Autoplay function
+    const play = () => {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+        function loop() {
+            posX -= 2; // Adjust speed here
+            if (posX <= -track.scrollWidth / 2) {
+                posX += track.scrollWidth / 2;
+            }
+            track.style.transform = `translateX(${posX}px)`;
+            animationFrameId = requestAnimationFrame(loop);
+        }
+        loop();
+    };
+
+    // Pause autoplay function
+    const pause = () => {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    };
+
+    // Event listeners for dragging
+    const startDrag = (e) => {
+        isDown = true;
+        slider.classList.add('active');
+        startX = (e.touches ? e.touches[0].pageX : e.pageX) - slider.offsetLeft;
+        scrollLeft = posX;
+        pause();
+    };
+
+    const endDrag = () => {
+        if (!isDown) return;
+        isDown = false;
+        slider.classList.remove('active');
+    };
+
+    const onDrag = (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = (e.touches ? e.touches[0].pageX : e.pageX) - slider.offsetLeft;
+        const walk = (x - startX) * 2;
+        posX = scrollLeft + walk;
+
+        const halfwayPoint = track.scrollWidth / 2;
+        if (posX < -halfwayPoint) {
+            posX += halfwayPoint;
+            scrollLeft += halfwayPoint;
+        }
+        if (posX > 0) {
+            posX -= halfwayPoint;
+            scrollLeft -= halfwayPoint;
+        }
+        track.style.transform = `translateX(${posX}px)`;
+    };
+
+    // --- Event Listeners ---
+    slider.addEventListener('mouseenter', pause);
+    slider.addEventListener('mouseleave', () => {
+        if (!isDown) {
+            play();
+        }
+    });
+
+    slider.addEventListener('mousedown', startDrag);
+    window.addEventListener('mouseup', endDrag);
+    slider.addEventListener('mousemove', onDrag);
+
+    slider.addEventListener('touchstart', startDrag, { passive: true });
+    window.addEventListener('touchend', endDrag);
+    slider.addEventListener('touchmove', onDrag);
+
+    // Start the autoplay
+    play();
+
+    // third page
+
+    const card = document.getElementById('card');
+
+    // Listen for mouse movement over the card
+    card.addEventListener('mousemove', (e) => {
+        // Get the position of the card relative to the viewport
+        const rect = card.getBoundingClientRect();
+
+        // Calculate the mouse position relative to the card's top-left corner
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Set the CSS custom properties on the card element.
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+    });
+
+    // fourth page
+    // 1. Setup Intersection Observer for scroll animations
+    const observerOptions = {
+        threshold: 0.2
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.autoDisplay, .project-card').forEach(el => {
+        observer.observe(el);
+    });
+
+    // 2. Video Play/Pause Logic
+    const videoContainers = document.querySelectorAll('.project-vidbox');
+
+    videoContainers.forEach(container => {
+        const video = container.querySelector('video');
+        const placeholder = container.querySelector('.video-placeholder');
+
+        // Error handling for local video files that don't exist
+        video.addEventListener('error', () => {
+            video.style.display = 'none';
+            if (placeholder) placeholder.style.display = 'flex';
         });
 
-        // fourth page
-         // 1. Setup Intersection Observer for scroll animations
-            const observerOptions = {
-                threshold: 0.2
-            };
+        container.addEventListener("mouseenter", () => {
+            if (video.readyState >= 2) { // Only try to play if metadata is loaded
+                video.play().catch(e => console.log("Auto-play prevented"));
+                if (placeholder) placeholder.style.opacity = '0';
+            }
+        });
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, observerOptions);
+        container.addEventListener("mouseleave", () => {
+            video.pause();
+            if (placeholder) placeholder.style.opacity = '1';
+        });
+    });
 
-            document.querySelectorAll('.autoDisplay, .project-card').forEach(el => {
-                observer.observe(el);
-            });
+    // fiveth page
 
-            // 2. Video Play/Pause Logic
-            const videoContainers = document.querySelectorAll('.project-vidbox');
+    const cards = document.querySelectorAll('.card');
 
-            videoContainers.forEach(container => {
-                const video = container.querySelector('video');
-                const placeholder = container.querySelector('.video-placeholder');
+    cards.forEach(card => {
+        // Use pointer events for better touch support
+        card.addEventListener('pointerenter', () => {
+            card.classList.add('is-hovered');
+        });
 
-                // Error handling for local video files that don't exist
-                video.addEventListener('error', () => {
-                    video.style.display = 'none';
-                    if (placeholder) placeholder.style.display = 'flex';
-                });
+        card.addEventListener('pointerleave', () => {
+            card.classList.remove('is-hovered');
+        });
 
-                container.addEventListener("mouseenter", () => {
-                    if (video.readyState >= 2) { // Only try to play if metadata is loaded
-                        video.play().catch(e => console.log("Auto-play prevented"));
-                        if (placeholder) placeholder.style.opacity = '0';
-                    }
-                });
+        // Also support touch to trigger hover state
+        card.addEventListener('touchstart', () => {
+            cards.forEach(c => c.classList.remove('is-hovered'));
+            card.classList.add('is-hovered');
+        }, { passive: true });
+    });
 
-                container.addEventListener("mouseleave", () => {
-                    video.pause();
-                    if (placeholder) placeholder.style.opacity = '1';
-                });
-            });
+    // Global click handler to remove hover on touch devices
+    document.addEventListener('touchstart', (e) => {
+        if (!e.target.closest('.card')) {
+            cards.forEach(c => c.classList.remove('is-hovered'));
+        }
+    }, { passive: true });
 
-            // fiveth page
+    // sixth page
+    const form = document.getElementById('contactForm');
 
-             const cards = document.querySelectorAll('.card');
+    form.addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent the default form submission
 
-            cards.forEach(card => {
-                // Use pointer events for better touch support
-                card.addEventListener('pointerenter', () => {
-                    card.classList.add('is-hovered');
-                });
-                
-                card.addEventListener('pointerleave', () => {
-                    card.classList.remove('is-hovered');
-                });
-                
-                // Also support touch to trigger hover state
-                card.addEventListener('touchstart', () => {
-                    cards.forEach(c => c.classList.remove('is-hovered'));
-                    card.classList.add('is-hovered');
-                }, {passive: true});
-            });
-            
-            // Global click handler to remove hover on touch devices
-            document.addEventListener('touchstart', (e) => {
-                if (!e.target.closest('.card')) {
-                    cards.forEach(c => c.classList.remove('is-hovered'));
-                }
-            }, {passive: true});
-         
-            // sixth page
-            const form = document.getElementById('contactForm');
-            
-            form.addEventListener('submit', function(event) {
-                event.preventDefault(); // Prevent the default form submission
+        // Simple validation check
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const needs = document.getElementById('needs').value.trim();
 
-                // Simple validation check
-                const name = document.getElementById('name').value.trim();
-                const email = document.getElementById('email').value.trim();
-                const needs = document.getElementById('needs').value.trim();
+        if (name === '' || email === '' || needs === '') {
+            alert('Please fill out all required fields: Name, Email, and How can we help?');
+            return;
+        }
 
-                if (name === '' || email === '' || needs === '') {
-                    alert('Please fill out all required fields: Name, Email, and How can we help?');
-                    return;
-                }
+        // Basic email format validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address.');
+            return;
+        }
 
-                // Basic email format validation
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) {
-                    alert('Please enter a valid email address.');
-                    return;
-                }
+        // If validation passes, show a success message
+        alert('Thank you for getting in touch! We will respond shortly.');
 
-                // If validation passes, show a success message
-                alert('Thank you for getting in touch! We will respond shortly.');
+        // Here you would typically send the data to a server, e.g., using fetch()
+        // For this example, we'll just log it to the console and reset the form
+        const formData = {
+            name,
+            email,
+            company: document.getElementById('company').value.trim(),
+            country: document.getElementById('country').value.trim(),
+            needs
+        };
 
-                // Here you would typically send the data to a server, e.g., using fetch()
-                // For this example, we'll just log it to the console and reset the form
-                const formData = {
-                    name,
-                    email,
-                    company: document.getElementById('company').value.trim(),
-                    country: document.getElementById('country').value.trim(),
-                    needs
-                };
-                
-                console.log('Form Submitted:', formData);
-                
-                form.reset();
-            });
-          
-            // seven page
+        console.log('Form Submitted:', formData);
 
-            const faqItems = document.querySelectorAll('.faq-item');
+        form.reset();
+    });
+
+    // seven page
+
+    const faqItems = document.querySelectorAll('.faq-item');
 
     // Set the initial state for the pre-opened item
     const activeItem = document.querySelector('.faq-item.active');
@@ -335,32 +335,32 @@
             }
         });
     });
-    });
+});
 
 // ===== AI Orb Canvas Animation =====
 (function () {
     const canvases = document.querySelectorAll('.ai-orb__canvas');
     if (canvases.length === 0) return;
-    
+
     const ctxs = Array.from(canvases).map(c => ({
         ctx: c.getContext('2d'),
         W: c.width,
         H: c.height
     }));
-    
+
     let t = 0;
 
     function drawOrb() {
-        ctxs.forEach(({ctx, W, H}) => {
+        ctxs.forEach(({ ctx, W, H }) => {
             ctx.clearRect(0, 0, W, H);
 
             // Base sphere gradient (white highlight top-left like the reference image)
             const baseGrad = ctx.createRadialGradient(W * 0.38, H * 0.3, 2, W / 2, H / 2, W / 2);
-            baseGrad.addColorStop(0,   'rgba(255, 255, 255, 0.95)');
+            baseGrad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
             baseGrad.addColorStop(0.2, 'rgba(200, 170, 255, 0.9)');
             baseGrad.addColorStop(0.5, 'rgba(130, 60, 255, 0.85)');
             baseGrad.addColorStop(0.8, 'rgba(60, 10, 160, 0.9)');
-            baseGrad.addColorStop(1,   'rgba(20, 0, 80, 1)');
+            baseGrad.addColorStop(1, 'rgba(20, 0, 80, 1)');
 
             ctx.beginPath();
             ctx.arc(W / 2, H / 2, W / 2 - 1, 0, Math.PI * 2);
@@ -376,9 +376,9 @@
                 W / 2 - Math.cos(t) * W * 0.3,
                 H / 2 - Math.sin(t) * H * 0.3
             );
-            sweepGrad.addColorStop(0,   `hsla(${hue1}, 100%, 70%, 0.35)`);
+            sweepGrad.addColorStop(0, `hsla(${hue1}, 100%, 70%, 0.35)`);
             sweepGrad.addColorStop(0.5, `hsla(${hue2}, 90%, 55%, 0.2)`);
-            sweepGrad.addColorStop(1,   `hsla(${hue1 + 60}, 80%, 40%, 0.3)`);
+            sweepGrad.addColorStop(1, `hsla(${hue1 + 60}, 80%, 40%, 0.3)`);
 
             ctx.beginPath();
             ctx.arc(W / 2, H / 2, W / 2 - 1, 0, Math.PI * 2);
@@ -387,9 +387,9 @@
 
             // Specular highlight (white glint top-left)
             const specGrad = ctx.createRadialGradient(W * 0.34, H * 0.28, 0, W * 0.38, H * 0.35, W * 0.26);
-            specGrad.addColorStop(0,   'rgba(255,255,255,0.75)');
+            specGrad.addColorStop(0, 'rgba(255,255,255,0.75)');
             specGrad.addColorStop(0.5, 'rgba(255,255,255,0.15)');
-            specGrad.addColorStop(1,   'rgba(255,255,255,0)');
+            specGrad.addColorStop(1, 'rgba(255,255,255,0)');
             ctx.beginPath();
             ctx.arc(W / 2, H / 2, W / 2 - 1, 0, Math.PI * 2);
             ctx.fillStyle = specGrad;
@@ -405,15 +405,15 @@
 
 // ===== Chatbot Widget Logic =====
 (function () {
-    const toggle     = document.getElementById('chatbot-toggle');
-    const window_    = document.getElementById('chatbot-window');
-    const openIcon   = document.getElementById('chatbot-open-icon');
-    const closeIcon  = document.getElementById('chatbot-close-icon');
-    const messages   = document.getElementById('chatbot-messages');
-    const input      = document.getElementById('chatbot-input');
-    const sendBtn    = document.getElementById('chatbot-send');
-    const chips      = document.querySelectorAll('.suggestion-chip');
-    const tooltip    = document.getElementById('chatbot-tooltip');
+    const toggle = document.getElementById('chatbot-toggle');
+    const window_ = document.getElementById('chatbot-window');
+    const openIcon = document.getElementById('chatbot-open-icon');
+    const closeIcon = document.getElementById('chatbot-close-icon');
+    const messages = document.getElementById('chatbot-messages');
+    const input = document.getElementById('chatbot-input');
+    const sendBtn = document.getElementById('chatbot-send');
+    const chips = document.querySelectorAll('.suggestion-chip');
+    const tooltip = document.getElementById('chatbot-tooltip');
 
     let isOpen = false;
     let tooltipTypingTimer;
@@ -425,7 +425,7 @@
         clearTimeout(tooltipTypingTimer);
         tooltip.innerHTML = '';
         let currentWordIndex = 0;
-        
+
         function typeWord() {
             if (currentWordIndex < tooltipWords.length) {
                 tooltip.innerHTML += (currentWordIndex > 0 ? ' ' : '') + tooltipWords[currentWordIndex];
@@ -433,7 +433,7 @@
                 tooltipTypingTimer = setTimeout(typeWord, 120); // 120ms per word
             }
         }
-        
+
         typeWord();
     });
 
@@ -460,11 +460,11 @@
             reply: 'You can view and download Harsh\'s resume here:\n\n<a href="https://drive.google.com/file/d/1rNNbxBWxi5PAiLo3LDK1PugITMDsMHNd/view?usp=sharing" target="_blank" style="color:#c4a8ff">Open Resume</a>'
         },
         {
-            keys: ['journey', 'education', 'study', 'college', 'background', 'story'],
-            reply: 'Head to the <b>Journey</b> section on this page to see Harsh\'s educational background and career timeline!'
+            keys: ['achievements', 'education', 'study', 'college', 'background', 'story'],
+            reply: 'Head to the <b>ACHIEVEMENTS</b> section on this page to see Harsh\'s educational background and career timeline!'
         },
         {
-            keys: ['certification', 'certificate', 'course', 'achievement'],
+            keys: ['certification', 'certificate', 'course', 'achievements'],
             reply: 'Check out the <b>Certification</b> section of this portfolio to see all the courses and certifications Harsh has completed!'
         },
         {
@@ -523,7 +523,7 @@
         isOpen = !isOpen;
         window_.classList.toggle('chatbot-hidden', !isOpen);
         toggle.classList.toggle('chat-open', isOpen);
-        openIcon.style.display  = isOpen ? 'none' : 'block';
+        openIcon.style.display = isOpen ? 'none' : 'block';
         closeIcon.style.display = isOpen ? 'block' : 'none';
         if (isOpen) setTimeout(() => input.focus(), 300);
     });
